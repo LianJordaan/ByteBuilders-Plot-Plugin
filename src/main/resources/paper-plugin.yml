@@ -1,0 +1,4 @@
+name: ByteBuildersPlotPlugin
+version: '${project.version}'
+main: io.github.lianjordaan.bytebuildersplotplugin.ByteBuildersPlotPlugin
+api-version: '1.21'
