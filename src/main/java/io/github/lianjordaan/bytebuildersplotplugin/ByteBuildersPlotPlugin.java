@@ -45,28 +45,6 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
             // Handle other exceptions
             logger.log(Level.SEVERE, "Failed to initialize WebSocket client", e);
         }
-
-        // Register the log listener to detect when the server is fully loaded
-        Bukkit.getServer().getLogger().addHandler(new Handler() {
-            @Override
-            public void publish(LogRecord record) {
-                String message = record.getMessage();
-                if (message != null && message.contains("Done (")) {
-                    // The server is fully online now
-                    onServerFullyLoaded();
-                }
-            }
-
-            @Override
-            public void flush() {
-                // Not needed
-            }
-
-            @Override
-            public void close() throws SecurityException {
-                // Not needed
-            }
-        });
     }
 
     private void onServerFullyLoaded() {
