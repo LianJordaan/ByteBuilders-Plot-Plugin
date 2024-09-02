@@ -4,37 +4,65 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class WebSocketClientHandler extends WebSocketClient {
 
     private final Logger logger;
+    private final URI serverUri;
+
+    private final ScheduledExecutorService reconnectScheduler = Executors.newSingleThreadScheduledExecutor();
+    private static final int RECONNECT_DELAY = 30; // Delay in seconds before trying to reconnect
 
     public WebSocketClientHandler(URI serverUri, Logger logger) {
         super(serverUri);
+        this.serverUri = serverUri;
         this.logger = logger;
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         logger.info("WebSocket connection opened");
-        send("{\"type\": \"message\", \"message\": \"Hello from Minecraft Velocity plugin!\"}");
+        send("{\"type\": \"message\", \"message\": \"Hello from Minecraft Plot plugin!\"}");
+        send("{\"type\": \"status\", \"status\": \"running\"}");
+        send("{\"type\": \"forwarded-message\", \"targetId\": \"proxy\", \"message\": \"running\"}");
     }
 
     @Override
     public void onMessage(String message) {
-        logger.log(Level.INFO, "Received message: {}", message);
+        logger.log(Level.INFO, "Received message: {0}", message);
         // Handle incoming messages from WebSocket server
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        logger.log(Level.INFO, "WebSocket connection closed: {}", reason);
+        logger.log(Level.INFO, "WebSocket connection closed: {0}", reason);
+        scheduleReconnect();
     }
 
     @Override
     public void onError(Exception ex) {
         logger.log(Level.SEVERE, "WebSocket error", ex);
+        scheduleReconnect();
+    }
+
+    private void scheduleReconnect() {
+        logger.info("Attempting to reconnect in " + RECONNECT_DELAY + " seconds...");
+        reconnectScheduler.schedule(() -> {
+            try {
+                reconnectBlocking();
+            } catch (InterruptedException e) {
+                logger.log(Level.SEVERE, "Reconnection attempt interrupted", e);
+                Thread.currentThread().interrupt();
+            }
+        }, RECONNECT_DELAY, TimeUnit.SECONDS);
+    }
+
+    public void shutdown() {
+        reconnectScheduler.shutdownNow();
     }
 }
