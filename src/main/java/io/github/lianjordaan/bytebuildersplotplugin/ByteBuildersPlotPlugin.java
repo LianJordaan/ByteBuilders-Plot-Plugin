@@ -47,16 +47,10 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
         }
     }
 
-    private void onServerFullyLoaded() {
-        //send message to websocket that start status is running
-        webSocketClient.send("{\"type\": \"status\", \"status\": \"running\"}");
-        webSocketClient.send("{\"type\": \"forwarded-message\", \"targetId\": \"proxy\", \"message\": \"running\"}");
-    }
-
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        webSocketClient.send("{\"type\": \"status\", \"status\": \"stopped\"}");
+        webSocketClient.send("{\"type\": \"status\", \"status\": \"stopping\"}");
         webSocketClient.send("{\"type\": \"forwarded-message\", \"targetId\": \"proxy\", \"message\": \"stopping\"}");
         webSocketClient.close();
 
