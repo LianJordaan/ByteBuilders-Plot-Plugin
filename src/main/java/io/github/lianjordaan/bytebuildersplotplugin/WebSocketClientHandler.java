@@ -1,5 +1,7 @@
 package io.github.lianjordaan.bytebuildersplotplugin;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -36,6 +38,30 @@ public class WebSocketClientHandler extends WebSocketClient {
     public void onMessage(String message) {
         logger.log(Level.INFO, "Received message: {0}", message);
         // Handle incoming messages from WebSocket server
+        JsonObject jsonMessage = JsonParser.parseString(message).getAsJsonObject();
+        String type = jsonMessage.get("type").getAsString();
+        if ("action".equals(type)) {
+            String action = jsonMessage.get("action").getAsString();
+            if ("unload-worlds".equals(action)) {
+                ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).unloadWorlds();
+                send("{\"type\":\"action\",\"action\":\"unload-worlds\",\"status\":\"done\"}");
+            }
+
+            // read unloadPlugins function
+//            if ("unload-plugins".equals(action)) {
+//                ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).unloadPlugins();
+//                send("{\"type\":\"action\",\"action\":\"unload-plugins\",\"status\":\"done\"}");
+//            }
+            if ("load-worlds".equals(action)) {
+                ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).loadWorlds();
+                send("{\"type\":\"action\",\"action\":\"load-worlds\",\"status\":\"done\"}");
+            }
+
+            // read loadPlugins function
+//            if ("load-plugins".equals(action)) {
+//                ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).loadPlugins();
+//            }
+        }
     }
 
     @Override
