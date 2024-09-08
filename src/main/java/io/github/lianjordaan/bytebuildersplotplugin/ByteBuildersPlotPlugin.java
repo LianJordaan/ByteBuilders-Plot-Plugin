@@ -2,13 +2,25 @@ package io.github.lianjordaan.bytebuildersplotplugin;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.util.TriState;
+import org.bukkit.*;
+import org.bukkit.block.Biome;
+import org.bukkit.generator.BiomeProvider;
+import org.bukkit.plugin.InvalidPluginException;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.eclipse.aether.util.FileUtils;
 import org.java_websocket.client.WebSocketClient;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Handler;
@@ -57,4 +69,123 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
         // Perform immediate cleanup tasks
         getLogger().info("Starting shutdown tasks...");
     }
+
+    public void unloadWorlds() {
+        Bukkit.getScheduler().runTask(this, () -> {
+            for (World world : Bukkit.getWorlds()) {
+                String worldName = world.getName();
+                // Unload the world
+                Bukkit.unloadWorld(world, false);
+                System.out.println("Unloaded world: " + worldName);
+
+                // Delete the world's directory
+                File worldFolder = new File(Bukkit.getWorldContainer(), worldName);
+                if (deleteDirectory(worldFolder)) {
+                    System.out.println("Deleted world directory: " + worldName);
+                } else {
+                    System.out.println("Failed to delete world directory: " + worldName);
+                }
+            }
+            System.out.println("All worlds have been unloaded and their directories deleted.");
+        });
+    }
+
+    // Utility method to delete a directory and its contents
+    private boolean deleteDirectory(File dir) {
+        if (dir.isDirectory()) {
+            File[] children = dir.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    if (!deleteDirectory(child)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return dir.delete();
+    }
+
+    // might add later, but as of now, it generates a lot of errors, because I am unable to load the plugins back...
+
+//    public void unloadPlugins() {
+//        Bukkit.getScheduler().runTask(this, () -> {
+//            PluginManager pm = Bukkit.getPluginManager();
+//            for (Plugin plugin : pm.getPlugins()) {
+//                // Skip the plugin that's currently executing this code
+//                if (plugin.isEnabled() && !plugin.getName().equals(this.getName())) {
+//                    pm.disablePlugin(plugin);
+//                }
+//            }
+//            System.out.println("All plugins have been unloaded except this plugin.");
+//        });
+//    }
+
+    public void loadWorlds() {
+        Bukkit.getScheduler().runTask(this, () -> {
+            // Get the server's world container (the folder where worlds are stored)
+            File worldContainer = Bukkit.getWorldContainer();
+
+            // List all directories in the server's world container
+            File[] worldFolders = worldContainer.listFiles(File::isDirectory);
+            if (worldFolders != null) {
+                for (File worldFolder : worldFolders) {
+                    String worldName = worldFolder.getName();
+
+                    // Skip already loaded worlds or non-dimension folders
+                    if (Bukkit.getWorld(worldName) != null || !worldName.startsWith("dim-")) {
+                        continue;
+                    }
+
+                    // Load the world
+                    WorldCreator creator = new WorldCreator(worldName);
+                    Bukkit.createWorld(creator);
+                    getLogger().info("Loaded world: " + worldName);
+                }
+            }
+            if (Bukkit.getWorld("dim-play") == null) {
+                World playDimension = Bukkit.createWorld(new WorldCreator("dim-play")
+                        .generateStructures(false)
+                        .generator("VoidGen")
+                        .keepSpawnLoaded(TriState.TRUE)
+                        .environment(World.Environment.NORMAL)
+                        .generatorSettings("{\"biome\":\"plains\"}")
+                        .type(WorldType.FLAT));
+                playDimension.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+                playDimension.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+                playDimension.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+            }
+            if (Bukkit.getWorld("dim-code") == null) {
+                World codeDimension = Bukkit.createWorld(new WorldCreator("dim-code")
+                        .generateStructures(false)
+                        .generator("VoidGen")
+                        .keepSpawnLoaded(TriState.TRUE)
+                        .environment(World.Environment.NORMAL)
+                        .generatorSettings("{\"biome\":\"plains\"}")
+                        .type(WorldType.FLAT));
+                codeDimension.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+                codeDimension.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+                codeDimension.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+            }
+        });
+    }
+
+    // might add later, but as of now, it generates a lot of errors, because you can't load paper plugins after the server has started
+
+//    public void loadPlugins() {
+//        Bukkit.getScheduler().runTask(this, () -> {
+//            File pluginsFolder = new File("plugins");
+//            for (File file : Objects.requireNonNull(pluginsFolder.listFiles())) {
+//                if (file.isFile() && file.getName().endsWith(".jar")) {
+//                    try {
+//                        Bukkit.getPluginManager().loadPlugin(file);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            System.out.println("All plugins have been loaded.");
+//        });
+//    }
+
+
 }
