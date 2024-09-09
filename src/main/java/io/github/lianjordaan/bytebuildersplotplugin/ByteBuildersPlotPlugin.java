@@ -70,25 +70,25 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
         getLogger().info("Starting shutdown tasks...");
     }
 
-    public void unloadWorlds() {
-        Bukkit.getScheduler().runTask(this, () -> {
-            for (World world : Bukkit.getWorlds()) {
-                String worldName = world.getName();
-                // Unload the world
-                Bukkit.unloadWorld(world, false);
-                System.out.println("Unloaded world: " + worldName);
-
-                // Delete the world's directory
-                File worldFolder = new File(Bukkit.getWorldContainer(), worldName);
-                if (deleteDirectory(worldFolder)) {
-                    System.out.println("Deleted world directory: " + worldName);
-                } else {
-                    System.out.println("Failed to delete world directory: " + worldName);
-                }
-            }
-            System.out.println("All worlds have been unloaded and their directories deleted.");
-        });
-    }
+//    public void unloadWorlds() {
+//        Bukkit.getScheduler().runTask(this, () -> {
+//            for (World world : Bukkit.getWorlds()) {
+//                String worldName = world.getName();
+//                // Unload the world
+//                Bukkit.unloadWorld(world, false);
+//                System.out.println("Unloaded world: " + worldName);
+//
+//                // Delete the world's directory
+//                File worldFolder = new File(Bukkit.getWorldContainer(), worldName);
+//                if (deleteDirectory(worldFolder)) {
+//                    System.out.println("Deleted world directory: " + worldName);
+//                } else {
+//                    System.out.println("Failed to delete world directory: " + worldName);
+//                }
+//            }
+//            System.out.println("All worlds have been unloaded and their directories deleted.");
+//        });
+//    }
 
     // Utility method to delete a directory and its contents
     private boolean deleteDirectory(File dir) {

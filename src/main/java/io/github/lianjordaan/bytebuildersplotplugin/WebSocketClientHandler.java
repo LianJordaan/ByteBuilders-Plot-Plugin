@@ -42,10 +42,10 @@ public class WebSocketClientHandler extends WebSocketClient {
         String type = jsonMessage.get("type").getAsString();
         if ("action".equals(type)) {
             String action = jsonMessage.get("action").getAsString();
-            if ("unload-worlds".equals(action)) {
-                ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).unloadWorlds();
-                send("{\"type\":\"action\",\"action\":\"unload-worlds\",\"status\":\"done\"}");
-            }
+//            if ("unload-worlds".equals(action)) {
+//                ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).unloadWorlds();
+//                send("{\"type\":\"action\",\"action\":\"unload-worlds\",\"status\":\"done\"}");
+//            }
 
             // read unloadPlugins function
 //            if ("unload-plugins".equals(action)) {
