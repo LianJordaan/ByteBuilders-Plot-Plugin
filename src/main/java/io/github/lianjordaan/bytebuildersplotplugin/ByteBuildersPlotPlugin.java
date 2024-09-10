@@ -1,17 +1,25 @@
 package io.github.lianjordaan.bytebuildersplotplugin;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.util.TriState;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.eclipse.aether.util.FileUtils;
 import org.java_websocket.client.WebSocketClient;
+import org.json.simple.JSONObject;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -23,6 +31,9 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -132,28 +143,66 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
                 }
             }
             if (Bukkit.getWorld("dim-play") == null) {
-                World playDimension = Bukkit.createWorld(new WorldCreator("dim-play")
-                        .generateStructures(false)
-                        .generator("VoidGen")
-                        .keepSpawnLoaded(TriState.TRUE)
-                        .environment(World.Environment.NORMAL)
-                        .generatorSettings("{\"biome\":\"plains\"}")
-                        .type(WorldType.FLAT));
-                playDimension.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-                playDimension.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-                playDimension.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+                webSocketClient.send("{\"type\": \"request-file\", \"file\": \"play-void\", \"fileType\": \"world\", \"worldName\": \"dim-play\"}");
+                ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                executor.scheduleAtFixedRate(() -> {
+                    try {
+                        // Parse the latest message
+                        JsonObject jsonResponse = JsonParser.parseString(latestMessage).getAsJsonObject();
+
+                        // Check if the response contains the desired confirmation
+                        if (jsonResponse.get("type").getAsString().equals("response") &&
+                                jsonResponse.get("status").getAsString().equals("world-transfer-complete") &&
+                                jsonResponse.get("world").getAsString().equals("dim-play")) {
+
+                            // Proceed with world creation since the transfer is complete
+                            if (Bukkit.getWorld("dim-play") == null) {
+                                Bukkit.createWorld(new WorldCreator("dim-play"));
+
+                                // Output confirmation to console
+                                System.out.println("World 'dim-play' created successfully.");
+                            }
+
+                            // Stop the executor once the world is created
+                            executor.shutdown();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("Error parsing response from WebSocket server.");
+                    }
+                }, 0, 1, TimeUnit.MILLISECONDS);
             }
+
             if (Bukkit.getWorld("dim-code") == null) {
-                World codeDimension = Bukkit.createWorld(new WorldCreator("dim-code")
-                        .generateStructures(false)
-                        .generator("VoidGen")
-                        .keepSpawnLoaded(TriState.TRUE)
-                        .environment(World.Environment.NORMAL)
-                        .generatorSettings("{\"biome\":\"plains\"}")
-                        .type(WorldType.FLAT));
-                codeDimension.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-                codeDimension.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-                codeDimension.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+                webSocketClient.send("{\"type\": \"request-file\", \"file\": \"code\", \"fileType\": \"world\", \"worldName\": \"dim-code\"}");
+                ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                executor.scheduleAtFixedRate(() -> {
+                    try {
+                        // Parse the latest message
+                        JsonObject jsonResponse = JsonParser.parseString(latestMessage).getAsJsonObject();
+
+                        // Check if the response contains the desired confirmation
+                        if (jsonResponse.get("type").getAsString().equals("response") &&
+                                jsonResponse.get("status").getAsString().equals("world-transfer-complete") &&
+                                jsonResponse.get("world").getAsString().equals("dim-code")) {
+
+                            // Proceed with world creation since the transfer is complete
+                            if (Bukkit.getWorld("dim-play") == null) {
+                                World codeDimension = Bukkit.createWorld(new WorldCreator("dim-code"));
+                                codeDimension.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
+
+                                // Output confirmation to console
+                                System.out.println("World 'dim-code' created successfully.");
+                            }
+
+                            // Stop the executor once the world is created
+                            executor.shutdown();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("Error parsing response from WebSocket server.");
+                    }
+                }, 0, 1, TimeUnit.MILLISECONDS);
             }
         });
     }
