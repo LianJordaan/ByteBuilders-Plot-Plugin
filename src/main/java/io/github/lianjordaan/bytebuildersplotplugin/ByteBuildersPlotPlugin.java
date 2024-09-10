@@ -94,6 +94,20 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
 //            System.out.println("All plugins have been unloaded except this plugin.");
 //        });
 //    }
+    public void loadWorld(String worldName) {
+        Bukkit.getScheduler().runTask(this, () -> {
+            // Skip already loaded worlds
+            if (Bukkit.getWorld(worldName) != null) {
+                return;
+            }
+            try {
+                // Load the world
+                WorldCreator creator = new WorldCreator(worldName);
+                Bukkit.createWorld(creator);
+            } catch (Exception ignored) {
+            }
+        });
+    }
 
     public void loadWorlds() {
         Bukkit.getScheduler().runTask(this, () -> {
