@@ -36,6 +36,7 @@ public class WebSocketClientHandler extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
+        ByteBuildersPlotPlugin.setLatestMessage(message);
         logger.log(Level.INFO, "Received message: {0}", message);
         // Handle incoming messages from WebSocket server
         JsonObject jsonMessage = JsonParser.parseString(message).getAsJsonObject();
