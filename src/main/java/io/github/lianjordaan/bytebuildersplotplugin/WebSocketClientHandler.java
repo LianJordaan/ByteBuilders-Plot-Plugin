@@ -43,10 +43,6 @@ public class WebSocketClientHandler extends WebSocketClient {
         String type = jsonMessage.get("type").getAsString();
         if ("action".equals(type)) {
             String action = jsonMessage.get("action").getAsString();
-//            if ("unload-worlds".equals(action)) {
-//                ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).unloadWorlds();
-//                send("{\"type\":\"action\",\"action\":\"unload-worlds\",\"status\":\"done\"}");
-//            }
 
             // read unloadPlugins function
 //            if ("unload-plugins".equals(action)) {
@@ -56,6 +52,11 @@ public class WebSocketClientHandler extends WebSocketClient {
             if ("load-worlds".equals(action)) {
                 ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).loadWorlds();
                 send("{\"type\":\"action\",\"action\":\"load-worlds\",\"status\":\"done\"}");
+            }
+            if ("load-world".equals(action)) {
+                String worldName = jsonMessage.get("worldName").getAsString();
+                ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).loadWorld(worldName);
+                send("{\"type\":\"action\",\"action\":\"load-world\",\"worldName\":\"" + worldName + "\",\"status\":\"done\"}");
             }
 
             // read loadPlugins function
