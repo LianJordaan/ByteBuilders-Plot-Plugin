@@ -31,7 +31,17 @@ import java.util.logging.Logger;
 public final class ByteBuildersPlotPlugin extends JavaPlugin {
     private Logger logger;
 
+    private static volatile String latestMessage = "";
+
     private WebSocketClient webSocketClient;
+
+    public static String getLatestMessage() {
+        return latestMessage;
+    }
+
+    public static void setLatestMessage(String latestMessage) {
+        ByteBuildersPlotPlugin.latestMessage = latestMessage;
+    }
 
     @Override
     public void onEnable() {
