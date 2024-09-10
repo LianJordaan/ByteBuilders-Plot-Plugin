@@ -155,13 +155,12 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
                                 jsonResponse.get("status").getAsString().equals("world-transfer-complete") &&
                                 jsonResponse.get("world").getAsString().equals("dim-play")) {
 
-                            // Proceed with world creation since the transfer is complete
-                            if (Bukkit.getWorld("dim-play") == null) {
+                            Bukkit.getScheduler().runTask(this, () -> {
                                 Bukkit.createWorld(new WorldCreator("dim-play"));
+                            });
 
-                                // Output confirmation to console
-                                System.out.println("World 'dim-play' created successfully.");
-                            }
+                            // Output confirmation to console
+                            System.out.println("World 'dim-play' created successfully.");
 
                             // Stop the executor once the world is created
                             executor.shutdown();
@@ -186,14 +185,13 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
                                 jsonResponse.get("status").getAsString().equals("world-transfer-complete") &&
                                 jsonResponse.get("world").getAsString().equals("dim-code")) {
 
-                            // Proceed with world creation since the transfer is complete
-                            if (Bukkit.getWorld("dim-play") == null) {
+
+                            Bukkit.getScheduler().runTask(this, () -> {
                                 World codeDimension = Bukkit.createWorld(new WorldCreator("dim-code"));
                                 codeDimension.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
-
-                                // Output confirmation to console
-                                System.out.println("World 'dim-code' created successfully.");
-                            }
+                            });
+                            // Output confirmation to console
+                            System.out.println("World 'dim-code' created successfully.");
 
                             // Stop the executor once the world is created
                             executor.shutdown();
