@@ -2,6 +2,8 @@ package io.github.lianjordaan.bytebuildersplotplugin;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.github.lianjordaan.bytebuildersplotplugin.commands.PlotCommands;
+import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.PlotCommandTabCompleter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.util.TriState;
@@ -56,6 +58,10 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.getCommand("plot").setExecutor(new PlotCommands());
+        this.getCommand("plot").setTabCompleter(new PlotCommandTabCompleter());
+
+
         this.logger = Bukkit.getLogger();
         // Plugin startup logic
         logger.info("ByteBuilders Plot Plugin initialized!");
