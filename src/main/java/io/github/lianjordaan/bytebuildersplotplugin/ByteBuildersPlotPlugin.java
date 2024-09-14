@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.lianjordaan.bytebuildersplotplugin.commands.PlotCommands;
 import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.PlotCommandTabCompleter;
+import io.github.lianjordaan.bytebuildersplotplugin.utils.LocationUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.util.TriState;
@@ -46,7 +47,7 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
 
     private static volatile String latestMessage = "";
 
-    private WebSocketClient webSocketClient;
+    public static WebSocketClient webSocketClient;
 
     public static String getLatestMessage() {
         return latestMessage;
@@ -163,6 +164,7 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
 
                             Bukkit.getScheduler().runTask(this, () -> {
                                 Bukkit.createWorld(new WorldCreator("dim-play"));
+                                LocationUtils.savePlotSpawnLocation(new Location(Bukkit.getWorld("dim-play"), 0.5, 1, 0.5, 0, 0));
                             });
 
                             // Output confirmation to console
@@ -195,6 +197,7 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
                             Bukkit.getScheduler().runTask(this, () -> {
                                 World codeDimension = Bukkit.createWorld(new WorldCreator("dim-code"));
                                 codeDimension.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
+                                LocationUtils.savePlotSpawnLocation(new Location(codeDimension, 117.5, -63, 10.5, -90, 0));
                             });
                             // Output confirmation to console
                             System.out.println("World 'dim-code' created successfully.");
