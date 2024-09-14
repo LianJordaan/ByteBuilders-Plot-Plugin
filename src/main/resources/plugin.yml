@@ -2,3 +2,8 @@ name: ByteBuildersPlotPlugin
 version: '${project.version}'
 main: io.github.lianjordaan.bytebuildersplotplugin.ByteBuildersPlotPlugin
 api-version: '1.21'
+commands:
+  plot:
+    description: Plot commands
+    usage: /<command> <create|delete>
+    aliases: [p]
