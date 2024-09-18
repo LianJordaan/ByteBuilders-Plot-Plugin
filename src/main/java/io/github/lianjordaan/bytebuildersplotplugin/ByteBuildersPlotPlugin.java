@@ -2,9 +2,14 @@ package io.github.lianjordaan.bytebuildersplotplugin;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.sk89q.worldedit.WorldEdit;
 import io.github.lianjordaan.bytebuildersplotplugin.commands.PlotCommands;
 import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.PlotCommandTabCompleter;
 import io.github.lianjordaan.bytebuildersplotplugin.utils.LocationUtils;
+import io.github.lianjordaan.bytebuildersplotplugin.worldedit.PluginModule;
+import io.github.lianjordaan.bytebuildersplotplugin.worldedit.WorldEditLimitListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.util.TriState;
@@ -19,8 +24,10 @@ import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.eclipse.aether.util.FileUtils;
+import org.eclipse.sisu.inject.Guice4;
 import org.java_websocket.client.WebSocketClient;
 import org.json.simple.JSONObject;
 
@@ -38,7 +45,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
+import com.google.inject.Inject;
 import java.util.logging.Logger;
 
 public final class ByteBuildersPlotPlugin extends JavaPlugin {
@@ -58,8 +65,23 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
         ByteBuildersPlotPlugin.latestMessage = latestMessage;
     }
 
+
+    private Injector injector;
+
+    public @NonNull Injector injector() {
+        return this.injector;
+    }
+
     @Override
     public void onEnable() {
+        try {
+            this.injector = Guice.createInjector(new PluginModule());
+
+            WorldEdit.getInstance().getEventBus().register(this.injector().getInstance(WorldEditLimitListener.class));
+            getServer().sendMessage(Component.text("Hooked into WorldEdit"));
+        } catch (Exception e) {
+            getServer().sendMessage(Component.text("Failed to hook into WorldEdit" + e.getMessage()));
+        }
         this.getCommand("plot").setExecutor(new PlotCommands());
         this.getCommand("plot").setTabCompleter(new PlotCommandTabCompleter());
 
