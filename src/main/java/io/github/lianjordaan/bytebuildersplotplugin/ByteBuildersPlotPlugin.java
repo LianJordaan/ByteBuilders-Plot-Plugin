@@ -47,6 +47,8 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
 
     private static volatile String latestMessage = "";
 
+    public static Integer plotSize;
+
     public static WebSocketClient webSocketClient;
 
     public static String getLatestMessage() {

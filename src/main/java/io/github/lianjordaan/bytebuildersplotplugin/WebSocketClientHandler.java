@@ -55,6 +55,9 @@ public class WebSocketClientHandler extends WebSocketClient {
                 ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class).loadWorld(worldName);
                 send("{\"type\":\"action\",\"action\":\"load-world\",\"worldName\":\"" + worldName + "\",\"status\":\"done\"}");
             }
+            if ("set-size".equals(action)) {
+                ByteBuildersPlotPlugin.plotSize = Integer.valueOf(jsonMessage.get("size").getAsString());
+            }
 
             // read loadPlugins function
 //            if ("load-plugins".equals(action)) {
