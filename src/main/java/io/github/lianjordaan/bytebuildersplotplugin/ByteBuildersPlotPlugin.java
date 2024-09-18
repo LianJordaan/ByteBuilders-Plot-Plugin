@@ -24,7 +24,6 @@ import org.eclipse.aether.util.FileUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.json.simple.JSONObject;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -100,20 +99,6 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
         getLogger().info("Starting shutdown tasks...");
     }
 
-    // might add later, but as of now, it generates a lot of errors, because I am unable to load the plugins back...
-
-//    public void unloadPlugins() {
-//        Bukkit.getScheduler().runTask(this, () -> {
-//            PluginManager pm = Bukkit.getPluginManager();
-//            for (Plugin plugin : pm.getPlugins()) {
-//                // Skip the plugin that's currently executing this code
-//                if (plugin.isEnabled() && !plugin.getName().equals(this.getName())) {
-//                    pm.disablePlugin(plugin);
-//                }
-//            }
-//            System.out.println("All plugins have been unloaded except this plugin.");
-//        });
-//    }
     public void loadWorld(String worldName) {
         Bukkit.getScheduler().runTask(this, () -> {
             // Skip already loaded worlds
@@ -215,24 +200,4 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
             }
         });
     }
-
-    // might add later, but as of now, it generates a lot of errors, because you can't load paper plugins after the server has started
-
-//    public void loadPlugins() {
-//        Bukkit.getScheduler().runTask(this, () -> {
-//            File pluginsFolder = new File("plugins");
-//            for (File file : Objects.requireNonNull(pluginsFolder.listFiles())) {
-//                if (file.isFile() && file.getName().endsWith(".jar")) {
-//                    try {
-//                        Bukkit.getPluginManager().loadPlugin(file);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//            System.out.println("All plugins have been loaded.");
-//        });
-//    }
-
-
 }
