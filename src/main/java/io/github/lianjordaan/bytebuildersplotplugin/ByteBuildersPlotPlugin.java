@@ -5,50 +5,34 @@ import com.google.gson.JsonParser;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import io.github.lianjordaan.bytebuildersplotplugin.commands.PlotCommands;
 import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.PlotCommandTabCompleter;
 import io.github.lianjordaan.bytebuildersplotplugin.utils.LocationUtils;
+import io.github.lianjordaan.bytebuildersplotplugin.worldedit.LocationClamper;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.PluginModule;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.WorldEditLimitListener;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.util.TriState;
 import org.bukkit.*;
-import org.bukkit.block.Biome;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.event.world.WorldSaveEvent;
-import org.bukkit.generator.BiomeProvider;
-import org.bukkit.plugin.InvalidPluginException;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.RequiresNonNull;
-import org.eclipse.aether.util.FileUtils;
-import org.eclipse.sisu.inject.Guice4;
 import org.java_websocket.client.WebSocketClient;
-import org.json.simple.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Handler;
 import java.util.logging.Level;
-import com.google.inject.Inject;
 import java.util.logging.Logger;
 
-public final class ByteBuildersPlotPlugin extends JavaPlugin {
+public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener {
     private Logger logger;
 
     private static volatile String latestMessage = "";
@@ -72,8 +56,21 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
         return this.injector;
     }
 
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        Location clampedLocation = LocationClamper.clampLocation(event.getPlayer().getLocation());
+//        event.getPlayer().sendMessage(Component.text("Clamped Location: " + clampedLocation));
+//        event.getPlayer().sendMessage(Component.text("Original Location: " + event.getPlayer().getLocation()));
+        if (!LocationUtils.isWithinPlotBounds(event.getPlayer().getLocation())) {
+            event.getPlayer().teleport(clampedLocation);
+        }
+    }
+
     @Override
     public void onEnable() {
+
+        getServer().getPluginManager().registerEvents(this, this);
+
         try {
             this.injector = Guice.createInjector(new PluginModule());
 
@@ -84,7 +81,6 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin {
         }
         this.getCommand("plot").setExecutor(new PlotCommands());
         this.getCommand("plot").setTabCompleter(new PlotCommandTabCompleter());
-
 
         this.logger = Bukkit.getLogger();
         // Plugin startup logic

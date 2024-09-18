@@ -45,4 +45,13 @@ public class LocationUtils {
         return new Location(world, x, y, z, yaw, pitch);
     }
 
+    public static boolean isWithinPlotBounds(Location targetLocation) {
+        return targetLocation.getWorld().equals(targetLocation.getWorld()) &&
+                (targetLocation.getX() >= Math.min(0, 127)) &&
+                (targetLocation.getX() <= Math.max(0, 127)) &&
+                (targetLocation.getY() >= Math.min(-64, 320)) &&
+                (targetLocation.getY() <= Math.max(-64, 320)) &&
+                (targetLocation.getZ() >= Math.min(0, 127)) &&
+                (targetLocation.getZ() <= Math.max(0, 127));
+    }
 }

@@ -42,4 +42,41 @@ public class RegionUtil {
                 .getY() && y <= max.getY();
     }
 
+    public static boolean isWithin(CuboidRegion inner, CuboidRegion outer) {
+        BlockVector3 innerMin = inner.getMinimumPoint();
+        BlockVector3 innerMax = inner.getMaximumPoint();
+
+        BlockVector3 outerMin = outer.getMinimumPoint();
+        BlockVector3 outerMax = outer.getMaximumPoint();
+
+        return innerMin.getX() >= outerMin.getX() && innerMax.getX() <= outerMax.getX()
+                && innerMin.getZ() >= outerMin.getZ() && innerMax.getZ() <= outerMax.getZ()
+                && innerMin.getY() >= outerMin.getY() && innerMax.getY() <= outerMax.getY();
+    }
+
+    public static CuboidRegion clampSelection(CuboidRegion selection, CuboidRegion bounds) {
+        BlockVector3 selMin = selection.getMinimumPoint();
+        BlockVector3 selMax = selection.getMaximumPoint();
+
+        BlockVector3 boundsMin = bounds.getMinimumPoint();
+        BlockVector3 boundsMax = bounds.getMaximumPoint();
+
+        // Calculate clamped coordinates
+        int clampedMinX = Math.max(selMin.getX(), boundsMin.getX());
+        int clampedMinY = Math.max(selMin.getY(), boundsMin.getY());
+        int clampedMinZ = Math.max(selMin.getZ(), boundsMin.getZ());
+
+        int clampedMaxX = Math.min(selMax.getX(), boundsMax.getX());
+        int clampedMaxY = Math.min(selMax.getY(), boundsMax.getY());
+        int clampedMaxZ = Math.min(selMax.getZ(), boundsMax.getZ());
+
+        // Ensure that the clamped max is greater than or equal to the clamped min
+        clampedMaxX = Math.max(clampedMaxX, clampedMinX);
+        clampedMaxY = Math.max(clampedMaxY, clampedMinY);
+        clampedMaxZ = Math.max(clampedMaxZ, clampedMinZ);
+
+        return new CuboidRegion(BlockVector3.at(clampedMinX, clampedMinY, clampedMinZ),
+                BlockVector3.at(clampedMaxX, clampedMaxY, clampedMaxZ));
+    }
+
 }
