@@ -5,17 +5,18 @@ import com.google.gson.JsonParser;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import io.github.lianjordaan.bytebuildersplotplugin.commands.PlotCommands;
 import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.PlotCommandTabCompleter;
 import io.github.lianjordaan.bytebuildersplotplugin.utils.LocationUtils;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.LocationClamper;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.PluginModule;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.WorldEditLimitListener;
+import io.github.lianjordaan.bytebuildersplotplugin.worldedit.WorldeditLoop;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -66,6 +67,11 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener
         }
     }
 
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        WorldeditLoop.loop(event.getPlayer());
+    }
+
     @Override
     public void onEnable() {
 
@@ -81,7 +87,6 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener
         }
         this.getCommand("plot").setExecutor(new PlotCommands());
         this.getCommand("plot").setTabCompleter(new PlotCommandTabCompleter());
-
         this.logger = Bukkit.getLogger();
         // Plugin startup logic
         logger.info("ByteBuilders Plot Plugin initialized!");
@@ -108,7 +113,7 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+//         Plugin shutdown logic
         webSocketClient.send("{\"type\": \"status\", \"status\": \"stopping\"}");
         webSocketClient.send("{\"type\": \"forwarded-message\", \"targetId\": \"proxy\", \"message\": \"stopping\"}");
         webSocketClient.close();
