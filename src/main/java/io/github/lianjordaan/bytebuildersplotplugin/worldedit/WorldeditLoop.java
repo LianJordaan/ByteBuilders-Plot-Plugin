@@ -5,6 +5,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.function.mask.RegionMask;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -66,6 +67,7 @@ public class WorldeditLoop {
                     }
 
                 }
+                localSession.setMask(new RegionMask(plotArea));
             }
         }.runTaskTimer(ByteBuildersPlotPlugin.getPlugin(ByteBuildersPlotPlugin.class), 1, 1);
     }
