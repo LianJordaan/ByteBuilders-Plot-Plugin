@@ -59,11 +59,20 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        Location clampedLocation = LocationClamper.clampLocation(event.getPlayer().getLocation());
-//        event.getPlayer().sendMessage(Component.text("Clamped Location: " + clampedLocation));
-//        event.getPlayer().sendMessage(Component.text("Original Location: " + event.getPlayer().getLocation()));
-        if (!LocationUtils.isWithinPlotBounds(event.getPlayer().getLocation())) {
-            event.getPlayer().teleport(clampedLocation);
+
+        if (event.getPlayer().getMetadata("admin-bypass").getFirst().asBoolean()) {
+            return;
+        }
+
+        String worldName = event.getPlayer().getWorld().getName();
+        if (worldName.equals("dim-code")) {;
+            if (!LocationUtils.isWithinCodeBounds(event.getPlayer().getLocation())) {
+                event.getPlayer().teleport(LocationClamper.clampLocationToCodeBounds(event.getPlayer().getLocation()));
+            }
+        } else if (worldName.startsWith("dim-")) {
+            if (!LocationUtils.isWithinPlotBounds(event.getPlayer().getLocation())) {
+                event.getPlayer().teleport(LocationClamper.clampLocationToPlotBounds(event.getPlayer().getLocation()));
+            }
         }
     }
 
