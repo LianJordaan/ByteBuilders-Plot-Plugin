@@ -11,6 +11,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.util.eventbus.EventHandler;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.World;
+import io.github.lianjordaan.bytebuildersplotplugin.ByteBuildersPlotPlugin;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 
@@ -42,7 +43,7 @@ public class WorldEditLimitListener {
             return;
         }
 
-        int size = 128 - 1;
+        int size = ByteBuildersPlotPlugin.plotSize - 1;
 
 
         CuboidRegion plotArea = new CuboidRegion(BlockVector3.at(0, -64, 0), BlockVector3.at(size, 320, size));
