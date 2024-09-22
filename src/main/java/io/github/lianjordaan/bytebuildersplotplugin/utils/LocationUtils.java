@@ -1,5 +1,6 @@
 package io.github.lianjordaan.bytebuildersplotplugin.utils;
 
+import io.github.lianjordaan.bytebuildersplotplugin.ByteBuildersPlotPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -46,12 +47,40 @@ public class LocationUtils {
     }
 
     public static boolean isWithinPlotBounds(Location targetLocation) {
+        int plotSize = ByteBuildersPlotPlugin.plotSize;
+
+        int xMin = 0;
+        int xMax = 0;
+        int zMin = 0;
+        int zMax = 0;
+
+        String worldName = targetLocation.getWorld().getName();
+        if (worldName.startsWith("dim-")) {
+            xMax = plotSize;
+            zMax = plotSize;
+        }
         return targetLocation.getWorld().equals(targetLocation.getWorld()) &&
-                (targetLocation.getX() >= Math.min(0, 127)) &&
-                (targetLocation.getX() <= Math.max(0, 127)) &&
-                (targetLocation.getY() >= Math.min(-64, 320)) &&
-                (targetLocation.getY() <= Math.max(-64, 320)) &&
-                (targetLocation.getZ() >= Math.min(0, 127)) &&
-                (targetLocation.getZ() <= Math.max(0, 127));
+                (targetLocation.getX() >= Math.min(xMin, xMax)) &&
+                (targetLocation.getX() <= Math.max(xMin, xMax)) &&
+                (targetLocation.getZ() >= Math.min(zMin, zMax)) &&
+                (targetLocation.getZ() <= Math.max(zMin, zMax));
+    }
+
+    public static boolean isWithinCodeBounds(Location targetLocation) {
+
+        int xMin = 0 - 16;
+        int xMax = 128 + 16;
+        int yMin = -63;
+        int yMax = 512;
+        int zMin = 0 - 16;
+        int zMax = 512 + 16;
+
+        return targetLocation.getWorld().equals(targetLocation.getWorld()) &&
+                (targetLocation.getX() >= Math.min(xMin, xMax)) &&
+                (targetLocation.getX() <= Math.max(xMin, xMax)) &&
+                (targetLocation.getY() >= Math.min(yMin, yMax)) &&
+                (targetLocation.getY() <= Math.max(yMin, yMax)) &&
+                (targetLocation.getZ() >= Math.min(zMin, zMax)) &&
+                (targetLocation.getZ() <= Math.max(zMin, zMax));
     }
 }
