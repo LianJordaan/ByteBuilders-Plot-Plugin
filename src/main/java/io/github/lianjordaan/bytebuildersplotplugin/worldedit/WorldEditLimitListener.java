@@ -51,6 +51,6 @@ public class WorldEditLimitListener {
         event.setExtent(new SingleRegionExtent(event.getExtent(),new FaweLimit(),plotArea));
 
 
-        Bukkit.getServer().sendMessage(Component.text("WorldEdit Limit Listener: Successfully set the extent to a plot area"));
+//        Bukkit.getServer().sendMessage(Component.text("WorldEdit Limit Listener: Successfully set the extent to a plot area"));
     }
 }
