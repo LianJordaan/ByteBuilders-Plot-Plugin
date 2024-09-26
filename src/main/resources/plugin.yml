@@ -5,5 +5,19 @@ api-version: '1.21'
 commands:
   plot:
     description: Plot commands
-    usage: /<command> <create|delete>
+    usage: /plot <subcommand>
     aliases: [p]
+  admin:
+    description: Admin commands
+    usage: /admin <subcommand>
+    permission: plots.admin
+    permission-message: "&cError: &7Unknown command! Click this message for a list of commands."
+    aliases: [a]
+permissions:
+  plots.admin:
+    description: Gives access to all admin commands
+    default: op
+    children:
+      plots.admin.bypass:
+        description: Allows players to bypass admin restrictions
+        default: op
