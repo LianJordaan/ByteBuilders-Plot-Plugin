@@ -12,8 +12,11 @@ import com.sk89q.worldedit.util.eventbus.EventHandler;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.World;
 import io.github.lianjordaan.bytebuildersplotplugin.ByteBuildersPlotPlugin;
+import io.github.lianjordaan.bytebuildersplotplugin.utils.PlayerStateCheckUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class WorldEditLimitListener {
 
@@ -26,12 +29,15 @@ public class WorldEditLimitListener {
             return;
         }
 
-
-
-
         if (event.getStage() != EditSession.Stage.BEFORE_HISTORY) {
             return;
         }
+
+//        if (PlayerStateCheckUtils.isPlayerInAdminBypass((Player) event.getActor())) {
+//            ((Player) event.getActor()).sendMessage(MiniMessage.miniMessage().deserialize("<red>Warning! You are in admin bypass mode. Your edits will not be limited to the plot."));
+//            return;
+//        }
+
         World worldObj = event.getWorld();
         if (worldObj == null) {
             return;
