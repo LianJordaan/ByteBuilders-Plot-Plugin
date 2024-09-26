@@ -12,6 +12,7 @@ import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.PermissiveSelectorLimits;
 import com.sk89q.worldedit.session.SessionManager;
 import io.github.lianjordaan.bytebuildersplotplugin.ByteBuildersPlotPlugin;
+import io.github.lianjordaan.bytebuildersplotplugin.utils.PlayerStateCheckUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,12 +22,20 @@ import java.util.List;
 
 public class WorldeditLoop {
     public static void loop(org.bukkit.entity.Player player) {
-        CuboidRegion plotArea = new CuboidRegion(BlockVector3.at(0, -64, 0), BlockVector3.at(127, 320, 127));
+
+        int size = ByteBuildersPlotPlugin.plotSize - 1;
+
+        CuboidRegion plotArea = new CuboidRegion(BlockVector3.at(0, -64, 0), BlockVector3.at(size, 320, size));
 
         new BukkitRunnable() {
             public void run() {
-                if (!player.isOnline())
-                    cancel();
+                if (!player.isOnline()) {
+                    cancel();  // Cancel future executions
+                    return;    // Stop the current iteration immediately
+                }
+//                if (PlayerStateCheckUtils.isPlayerInAdminBypass(player)) {
+//                    return;
+//                }
 
                 Player actor = BukkitAdapter.adapt(player);
                 SessionManager manager = WorldEdit.getInstance().getSessionManager();
