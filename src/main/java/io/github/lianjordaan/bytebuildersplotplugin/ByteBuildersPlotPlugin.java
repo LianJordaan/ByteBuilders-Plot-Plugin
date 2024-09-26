@@ -5,9 +5,12 @@ import com.google.gson.JsonParser;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.sk89q.worldedit.WorldEdit;
+import io.github.lianjordaan.bytebuildersplotplugin.commands.AdminCommands;
 import io.github.lianjordaan.bytebuildersplotplugin.commands.PlotCommands;
+import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.AdminCommandTabCompleter;
 import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.PlotCommandTabCompleter;
 import io.github.lianjordaan.bytebuildersplotplugin.utils.LocationUtils;
+import io.github.lianjordaan.bytebuildersplotplugin.utils.PlayerStateCheckUtils;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.LocationClamper;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.PluginModule;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.WorldEditLimitListener;
@@ -60,18 +63,17 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
 
-        if (event.getPlayer().getMetadata("admin-bypass").getFirst().asBoolean()) {
-            return;
-        }
+        if (!PlayerStateCheckUtils.isPlayerInAdminBypass(event.getPlayer())) {
 
-        String worldName = event.getPlayer().getWorld().getName();
-        if (worldName.equals("dim-code")) {;
-            if (!LocationUtils.isWithinCodeBounds(event.getPlayer().getLocation())) {
-                event.getPlayer().teleport(LocationClamper.clampLocationToCodeBounds(event.getPlayer().getLocation()));
-            }
-        } else if (worldName.startsWith("dim-")) {
-            if (!LocationUtils.isWithinPlotBounds(event.getPlayer().getLocation())) {
-                event.getPlayer().teleport(LocationClamper.clampLocationToPlotBounds(event.getPlayer().getLocation()));
+            String worldName = event.getPlayer().getWorld().getName();
+            if (worldName.equals("dim-code")) {;
+                if (!LocationUtils.isWithinCodeBounds(event.getPlayer().getLocation())) {
+                    event.getPlayer().teleport(LocationClamper.clampLocationToCodeBounds(event.getPlayer().getLocation()));
+                }
+            } else if (worldName.startsWith("dim-")) {
+                if (!LocationUtils.isWithinPlotBounds(event.getPlayer().getLocation())) {
+                    event.getPlayer().teleport(LocationClamper.clampLocationToPlotBounds(event.getPlayer().getLocation()));
+                }
             }
         }
     }
@@ -96,6 +98,9 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener
         }
         this.getCommand("plot").setExecutor(new PlotCommands());
         this.getCommand("plot").setTabCompleter(new PlotCommandTabCompleter());
+
+        this.getCommand("admin").setExecutor(new AdminCommands());
+        this.getCommand("admin").setTabCompleter(new AdminCommandTabCompleter());
         this.logger = Bukkit.getLogger();
         // Plugin startup logic
         logger.info("ByteBuilders Plot Plugin initialized!");
