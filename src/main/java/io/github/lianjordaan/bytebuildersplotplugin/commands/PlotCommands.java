@@ -41,7 +41,7 @@ public class PlotCommands implements CommandExecutor {
 
             switch (subcommand.toLowerCase()) {
                 case "kick":
-                    if (args[1].equalsIgnoreCase("*")) {
+                    if (args[1].equalsIgnoreCase("*") || args[1].equalsIgnoreCase("@a")) {
                         Bukkit.getOnlinePlayers().forEach(player1 -> {
                             if (player1 == player) {
                                 return;
@@ -74,6 +74,7 @@ public class PlotCommands implements CommandExecutor {
                         }
                     }
                     break;
+                case "s":
                 case "spawn":
                     // Implement spawn functionality here
 
