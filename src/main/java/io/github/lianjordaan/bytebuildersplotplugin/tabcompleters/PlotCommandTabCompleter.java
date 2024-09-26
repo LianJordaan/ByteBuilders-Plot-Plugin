@@ -21,9 +21,9 @@ public class PlotCommandTabCompleter implements TabCompleter {
         }
 
         if (args.length == 1) {
-            completions.addAll(Arrays.asList("spawn", "setspawn", "codespace", "kick"));
+            completions.addAll(Arrays.asList("spawn", "s", "setspawn", "codespace", "kick"));
         } else if (args.length == 2) {
-            if ("spawn".equalsIgnoreCase(args[0])) {
+            if ("spawn".equalsIgnoreCase(args[0]) || "s".equalsIgnoreCase(args[0])) {
                 File[] folders = new File(".").listFiles();
                 for (File folder : folders) {
                     if (folder.isDirectory() && folder.getName().startsWith("dim-")) {
@@ -34,6 +34,7 @@ public class PlotCommandTabCompleter implements TabCompleter {
                 completions.addAll(Arrays.asList("add", "remove"));
             } else if ("kick".equalsIgnoreCase(args[0])) {
                 completions.add("*");
+                completions.add("@a");
                 completions.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
             }
         }
