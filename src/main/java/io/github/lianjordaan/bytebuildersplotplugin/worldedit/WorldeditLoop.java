@@ -26,7 +26,7 @@ public class WorldeditLoop {
         int size = ByteBuildersPlotPlugin.plotSize - 1;
 
         CuboidRegion plotArea = new CuboidRegion(BlockVector3.at(0, -64, 0), BlockVector3.at(size, 320, size));
-
+        final boolean[] reset = {false};
         new BukkitRunnable() {
 
             public void run() {
@@ -34,10 +34,11 @@ public class WorldeditLoop {
                     cancel();  // Cancel future executions
                     return;    // Stop the current iteration immediately
                 }
+                Player actor = BukkitAdapter.adapt(player);
+                SessionManager manager = WorldEdit.getInstance().getSessionManager();
+                LocalSession localSession = manager.get(actor);
                 if (!PlayerStateCheckUtils.isPlayerInAdminBypass(player)) {
-                    Player actor = BukkitAdapter.adapt(player);
-                    SessionManager manager = WorldEdit.getInstance().getSessionManager();
-                    LocalSession localSession = manager.get(actor);
+                    reset[0] = false;
                     if (localSession.getSelectionWorld() != null) {
                         RegionSelector selector = localSession.getRegionSelector(localSession.getSelectionWorld());
                         if (selector.isDefined()) {
@@ -74,7 +75,12 @@ public class WorldeditLoop {
                         }
 
                     }
-                    localSession.setMask(new RegionMask(plotArea));
+                    localSession.setMask(new RegionMask(plotArea).tryCombine(localSession.getMask()));
+                } else {
+                    if (!reset[0]){
+                        localSession.setMask(null);
+                        reset[0] = true;
+                    }
                 }
 
 

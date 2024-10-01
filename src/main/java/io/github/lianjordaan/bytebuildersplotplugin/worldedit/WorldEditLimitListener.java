@@ -3,6 +3,7 @@ package io.github.lianjordaan.bytebuildersplotplugin.worldedit;
 import com.fastasyncworldedit.core.extent.SingleRegionExtent;
 import com.fastasyncworldedit.core.limit.FaweLimit;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extent.MaskingExtent;
 import com.sk89q.worldedit.function.mask.RegionMask;
@@ -47,8 +48,9 @@ public class WorldEditLimitListener {
 
 
         CuboidRegion plotArea = new CuboidRegion(BlockVector3.at(0, -64, 0), BlockVector3.at(size, 320, size));
-        if (PlayerStateCheckUtils.isPlayerInAdminBypass((Player) event.getActor())) {
-            ((Player) event.getActor()).sendMessage(MiniMessage.miniMessage().deserialize("<red>Warning! You are in admin bypass mode. Your edits will not be limited to the plot."));
+        Player player = (Player) BukkitAdapter.adapt(event.getActor());
+        if (PlayerStateCheckUtils.isPlayerInAdminBypass(player)) {
+            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Warning! You are in admin bypass mode. Your edits will not be limited to the plot."));
         } else {
             event.setExtent(new MaskingExtent(event.getExtent(), new RegionMask(plotArea)));
             event.setExtent(new SingleRegionExtent(event.getExtent(), new FaweLimit(), plotArea));
