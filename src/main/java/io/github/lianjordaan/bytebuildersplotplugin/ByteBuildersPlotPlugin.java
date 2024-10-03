@@ -9,6 +9,7 @@ import io.github.lianjordaan.bytebuildersplotplugin.commands.AdminCommands;
 import io.github.lianjordaan.bytebuildersplotplugin.commands.PlotCommands;
 import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.AdminCommandTabCompleter;
 import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.PlotCommandTabCompleter;
+import io.github.lianjordaan.bytebuildersplotplugin.utils.EntityLoop;
 import io.github.lianjordaan.bytebuildersplotplugin.utils.LocationUtils;
 import io.github.lianjordaan.bytebuildersplotplugin.utils.PlayerStateCheckUtils;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.LocationClamper;
@@ -87,6 +88,8 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener
     public void onEnable() {
 
         getServer().getPluginManager().registerEvents(this, this);
+
+        EntityLoop.startLoop();
 
         try {
             this.injector = Guice.createInjector(new PluginModule());
