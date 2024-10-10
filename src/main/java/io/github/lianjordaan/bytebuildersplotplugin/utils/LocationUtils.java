@@ -46,6 +46,19 @@ public class LocationUtils {
         return new Location(world, x, y, z, yaw, pitch);
     }
 
+    public static boolean isWithinPlayWord(Location locationToCheck) {
+        String worldName = locationToCheck.getWorld().getName();
+        if (worldName.equalsIgnoreCase("dim-code")) {
+            return false;
+        }
+        return worldName.startsWith("dim-");
+    }
+
+    public static boolean isWithinCodeWord(Location locationToCheck) {
+        String worldName = locationToCheck.getWorld().getName();
+        return worldName.equalsIgnoreCase("dim-code");
+    }
+
     public static boolean isWithinPlotBounds(Location targetLocation) {
         int plotSize = ByteBuildersPlotPlugin.plotSize;
 
