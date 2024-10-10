@@ -6,6 +6,7 @@ import io.github.lianjordaan.bytebuildersplotplugin.worldedit.LocationClamper;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -24,6 +25,9 @@ public class entityLoop {
                                     continue;
                                 }
                                 if (!LocationUtils.isWithinCodeBounds(entity.getLocation())) {
+                                    if (entity instanceof Item) {
+                                        entity.setGravity(false);
+                                    }
                                     entity.teleport(LocationClamper.clampLocationToCodeBounds(entity.getLocation()));
                                 }
                             }
