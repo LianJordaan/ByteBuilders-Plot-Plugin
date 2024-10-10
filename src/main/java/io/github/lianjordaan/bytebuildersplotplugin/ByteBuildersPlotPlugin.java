@@ -7,9 +7,14 @@ import com.google.inject.Injector;
 import com.sk89q.worldedit.WorldEdit;
 import io.github.lianjordaan.bytebuildersplotplugin.commands.AdminCommands;
 import io.github.lianjordaan.bytebuildersplotplugin.commands.PlotCommands;
+import io.github.lianjordaan.bytebuildersplotplugin.plotLimits.codeArea.codeBlockListeners;
+import io.github.lianjordaan.bytebuildersplotplugin.plotLimits.codeArea.codePistonListener;
+import io.github.lianjordaan.bytebuildersplotplugin.plotLimits.playArea.playBlockListeners;
+import io.github.lianjordaan.bytebuildersplotplugin.plotLimits.entityLoop;
+import io.github.lianjordaan.bytebuildersplotplugin.plotLimits.playArea.playPistonListener;
+import io.github.lianjordaan.bytebuildersplotplugin.plotLimits.playArea.playStructureGenerateListener;
 import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.AdminCommandTabCompleter;
 import io.github.lianjordaan.bytebuildersplotplugin.tabcompleters.PlotCommandTabCompleter;
-import io.github.lianjordaan.bytebuildersplotplugin.utils.EntityLoop;
 import io.github.lianjordaan.bytebuildersplotplugin.utils.LocationUtils;
 import io.github.lianjordaan.bytebuildersplotplugin.utils.PlayerStateCheckUtils;
 import io.github.lianjordaan.bytebuildersplotplugin.worldedit.LocationClamper;
@@ -86,11 +91,20 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener
 
     @Override
     public void onEnable() {
-
+        this.logger = Bukkit.getLogger();
+        logger.info("Registering events...");
+        getServer().getPluginManager().registerEvents(new playPistonListener(), this);
+        getServer().getPluginManager().registerEvents(new playStructureGenerateListener(), this);
+        getServer().getPluginManager().registerEvents(new playBlockListeners(), this);
+        getServer().getPluginManager().registerEvents(new codePistonListener(), this);
+        getServer().getPluginManager().registerEvents(new codeBlockListeners(), this);
         getServer().getPluginManager().registerEvents(this, this);
 
-        EntityLoop.startLoop();
+        logger.info("Starting loops...");
+        entityLoop.startLoop();
 
+
+        logger.info("Injecting code into WorldEdit api...");
         try {
             this.injector = Guice.createInjector(new PluginModule());
 
@@ -99,12 +113,13 @@ public final class ByteBuildersPlotPlugin extends JavaPlugin implements Listener
         } catch (Exception e) {
             getServer().sendMessage(Component.text("Failed to hook into WorldEdit" + e.getMessage()));
         }
+
+        logger.info("Registering commands...");
         this.getCommand("plot").setExecutor(new PlotCommands());
         this.getCommand("plot").setTabCompleter(new PlotCommandTabCompleter());
 
         this.getCommand("admin").setExecutor(new AdminCommands());
         this.getCommand("admin").setTabCompleter(new AdminCommandTabCompleter());
-        this.logger = Bukkit.getLogger();
         // Plugin startup logic
         logger.info("ByteBuilders Plot Plugin initialized!");
 
