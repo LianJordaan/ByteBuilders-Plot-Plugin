@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class entityLoop {
@@ -27,6 +28,10 @@ public class entityLoop {
                                 if (!LocationUtils.isWithinCodeBounds(entity.getLocation())) {
                                     if (entity instanceof Item) {
                                         entity.setGravity(false);
+                                    }
+                                    if (entity instanceof Projectile) {
+                                        entity.remove();
+                                        continue;
                                     }
                                     entity.teleport(LocationClamper.clampLocationToCodeBounds(entity.getLocation()));
                                 }
