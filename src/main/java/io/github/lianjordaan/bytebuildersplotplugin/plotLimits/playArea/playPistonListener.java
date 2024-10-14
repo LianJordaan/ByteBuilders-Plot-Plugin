@@ -20,6 +20,16 @@ public class playPistonListener implements Listener {
         // Get the direction the piston is pushing
         BlockFace direction = event.getDirection();
 
+        // Calculate the location of the piston head
+        Location pistonHeadLocation = event.getBlock().getLocation().add(direction.getModX(), direction.getModY(), direction.getModZ());
+
+        // Check if the new location is within the plot bounds
+        if (!LocationUtils.isWithinPlotBounds(pistonHeadLocation)) {
+            // Cancel the event if the piston head would be pushed out of bounds
+            event.setCancelled(true);
+            return;
+        }
+
         // Iterate through each block affected by the piston push
         for (Block block : event.getBlocks()) {
             // Calculate the new location based on the push direction
