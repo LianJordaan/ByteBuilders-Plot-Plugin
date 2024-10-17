@@ -72,6 +72,9 @@ public class LocationUtils {
             xMax = plotSize;
             zMax = plotSize;
         }
+        if (plotSize == 0) {
+            return true;
+        }
         return targetLocation.getWorld().equals(targetLocation.getWorld()) &&
                 (targetLocation.getX() >= Math.min(xMin, xMax)) &&
                 (targetLocation.getX() <= Math.max(xMin, xMax)) &&

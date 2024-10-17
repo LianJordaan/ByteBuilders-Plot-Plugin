@@ -49,8 +49,10 @@ public class WorldEditLimitListener {
 
         CuboidRegion plotArea = new CuboidRegion(BlockVector3.at(0, -64, 0), BlockVector3.at(size, 320, size));
         Player player = (Player) BukkitAdapter.adapt(event.getActor());
-        if (PlayerStateCheckUtils.isPlayerInAdminBypass(player)) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Warning! You are in admin bypass mode. Your edits will not be limited to the plot."));
+        if (PlayerStateCheckUtils.isPlayerInAdminBypass(player) || size == -1) {
+            if (PlayerStateCheckUtils.isPlayerInAdminBypass(player)) {
+                player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Warning! You are in admin bypass mode. Your edits will not be limited to the plot."));
+            }
         } else {
             event.setExtent(new MaskingExtent(event.getExtent(), new RegionMask(plotArea)));
             event.setExtent(new SingleRegionExtent(event.getExtent(), new FaweLimit(), plotArea));

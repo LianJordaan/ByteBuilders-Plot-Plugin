@@ -24,6 +24,9 @@ public class WorldeditLoop {
     public static void loop(org.bukkit.entity.Player player) {
 
         int size = ByteBuildersPlotPlugin.plotSize - 1;
+        if (size == -1) {
+            return;
+        }
 
         CuboidRegion plotArea = new CuboidRegion(BlockVector3.at(0, -64, 0), BlockVector3.at(size, 320, size));
         final boolean[] reset = {false};
